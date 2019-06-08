@@ -15,7 +15,7 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 @Configuration
 public class CrawlerConfig {
 	
-	@Bean
+	@Bean(name = "textCrawlController")
 	@Scope("prototype")
 	public CrawlController textCrawlController() throws Exception {
 		File crawlStorageBase = new File("src/test/resources/crawler4j");
@@ -35,7 +35,7 @@ public class CrawlerConfig {
 		return htmlController;
 	}
 	
-	@Bean
+	@Bean(name = "imageCrawlController")
 	@Scope("prototype")
 	public CrawlController imageCrawlController() throws Exception {
 		File crawlStorageBase = new File("src/test/resources/crawler4j");
