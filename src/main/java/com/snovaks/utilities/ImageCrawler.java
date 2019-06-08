@@ -14,6 +14,8 @@ public class ImageCrawler extends WebCrawler {
 	
 	private static final Pattern IMG_PATTERNS = Pattern.compile(".*(\\.(jpg|jpeg))$");
 	
+	private ImageSoupHelper imageSoupHelper = new ImageSoupHelper();
+	
 	@Override
 	public boolean shouldVisit(Page referringPage, WebURL url) {
 		String urlString = url.getURL().toLowerCase();
@@ -35,8 +37,7 @@ public class ImageCrawler extends WebCrawler {
 		String url = page.getWebURL().getURL();
 		if(IMG_PATTERNS.matcher(url).matches()
 				&& page.getParseData() instanceof BinaryParseData) {
-			String extension = url.substring(url.lastIndexOf("."));
-			int contentLength = page.getContentData().length;
+			imageSoupHelper.connectGetAndDownloadImage(url);
 		}
 	}
 	
