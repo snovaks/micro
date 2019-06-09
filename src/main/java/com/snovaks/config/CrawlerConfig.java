@@ -5,6 +5,8 @@ import java.io.File;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.web.context.WebApplicationContext;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
@@ -16,13 +18,14 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 public class CrawlerConfig {
 	
 	@Bean(name = "textCrawlController")
-	@Scope("prototype")
+	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public CrawlController textCrawlController() throws Exception {
 		File crawlStorageBase = new File("src/test/resources/crawler4j");
+
 		CrawlConfig htmlConfig = new CrawlConfig();
-		htmlConfig.setCrawlStorageFolder(new File(crawlStorageBase, "html")
-				.getAbsolutePath());
+		htmlConfig.setCrawlStorageFolder(new File(crawlStorageBase, "html").getAbsolutePath());
 		htmlConfig.setMaxPagesToFetch(100);
+		htmlConfig.setResumableCrawling(true);
 		PageFetcher pageFetcherHtml = new PageFetcher(htmlConfig);
 		
 		RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
@@ -36,7 +39,7 @@ public class CrawlerConfig {
 	}
 	
 	@Bean(name = "imageCrawlController")
-	@Scope("prototype")
+	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public CrawlController imageCrawlController() throws Exception {
 		File crawlStorageBase = new File("src/test/resources/crawler4j");
 		CrawlConfig imageConfig = new CrawlConfig();
