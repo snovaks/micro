@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.snovaks.domain.SearchRequest;
 import com.snovaks.utilities.HtmlCrawler;
 import com.snovaks.utilities.ImageCrawler;
 
@@ -15,13 +16,15 @@ public class CrawlerService {
 	private CrawlController textCrawlController;
 	private CrawlController imageCrawlController;
 	
-	public void searchPlainText(String url) {
+	public void searchPlainText(SearchRequest searchRequest) {
+		String url = searchRequest.getUrl();
 		textCrawlController.addSeed(url);
 		textCrawlController.startNonBlocking(HtmlCrawler::new, 10);
 		textCrawlController.waitUntilFinish();
 	}
 	
-	public void searchImages(String url) {
+	public void searchImages(SearchRequest searchRequest) {
+		String url = searchRequest.getUrl();
 		imageCrawlController.addSeed(url);
 		imageCrawlController.startNonBlocking(ImageCrawler::new, 10);
 		imageCrawlController.waitUntilFinish();
