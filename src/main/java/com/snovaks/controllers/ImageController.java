@@ -28,7 +28,7 @@ public class ImageController {
 	}
 	
 	@PostMapping(consumes=MediaType.APPLICATION_JSON_VALUE)
-	public void searchImages(@RequestBody SearchRequest searchRequest) {
+	public void searchImages(@RequestBody SearchRequest searchRequest) throws Exception {
 		crawlerService.searchImages(searchRequest);
 	}
 	

@@ -28,9 +28,9 @@ public class TextController {
 	}
 	
 	@PostMapping(consumes=MediaType.APPLICATION_JSON_VALUE)
-	public void searchText(@RequestBody SearchRequest searchRequest) {
+	public void searchText(@RequestBody SearchRequest searchRequest) throws Exception {
 		System.out.println("Otrzymano searchRequest: " + searchRequest);
-		crawlerService.searchPlainText(searchRequest);
+		crawlerService.searchText(searchRequest);
 	}
 	
 }
