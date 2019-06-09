@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -23,19 +24,31 @@ public class HtmlSoupHelper {
 		}
 	}
 	
-	private void saveTheText(String textContent, String stringElementURL) {
+	private void saveTheText(String textContent, String stringElementURL) throws IOException {
 		File file = new File(TEXT_DESTINATION_FOLDER);
-		
 		boolean fileExists = file.exists();
 		if(!fileExists) {
 			fileExists = file.mkdir();
 		}
 		
-		String domainName = stringElementURL.substring(stringElementURL.indexOf(".") + 1, stringElementURL.lastIndexOf("."));
-		String textFileName = domainName + "-" + stringElementURL.substring(stringElementURL.lastIndexOf("/") + 1) + ".txt";
-				
+		int indexSecondSlash = StringUtils.ordinalIndexOf(stringElementURL, "/", 2);
+		int indexThirdSlash = StringUtils.ordinalIndexOf(stringElementURL, "/", 3);
+		String domainName = stringElementURL.substring(indexSecondSlash, indexThirdSlash);
+		domainName = domainName.replace(".", "-");
+		
+		String domainFilePath = TEXT_DESTINATION_FOLDER + "/" + domainName;
+		File domainFile = new File(domainFilePath);
+		
+		boolean domainFileExists = domainFile.exists();
+		if(!domainFileExists) {
+			domainFileExists = domainFile.mkdir();
+		}
+		
+		String textFileName = calculateTextFileName(stringElementURL);
+		String finalTextFileName = domainFilePath + "/" + textFileName + ".txt";
+		
 		try (
-			var fileWriter = new FileWriter(TEXT_DESTINATION_FOLDER + "/" + textFileName);
+			var fileWriter = new FileWriter(finalTextFileName);
 			var writer = new BufferedWriter(fileWriter);
 		) {
 			writer.write(textContent);
@@ -43,6 +56,21 @@ public class HtmlSoupHelper {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
+	}
+	
+	private String calculateTextFileName(String stringURL) {
+		String textFileName = stringURL;
+		int stringLength = stringURL.length();
+		char lastChar = stringURL.charAt(stringLength - 1);
+		
+		if(lastChar == '/') {
+			StringBuilder sb = new StringBuilder(stringURL);
+			sb.deleteCharAt(stringLength - 1);
+			System.out.println("Zmieniona nazwa: " + sb.toString());
+			textFileName = sb.toString();
+		}
+		
+		return textFileName.substring(textFileName.lastIndexOf("/") + 1);
 	}
 	
 }
