@@ -8,10 +8,13 @@ import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HtmlSoupHelper {
 
 	private static final String TEXT_DESTINATION_FOLDER = "./texts";
+	private static final Logger logger = LoggerFactory.getLogger(HtmlSoupHelper.class);
 	
 	public void connectGetAndDownloadTheDocument(String stringURL) {
 		try {
@@ -53,8 +56,9 @@ public class HtmlSoupHelper {
 		) {
 			writer.write(textContent);
 			writer.newLine();
+			logger.info("File has been saved " + finalTextFileName);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.warn("Error during saving", e);
 		}	
 	}
 	
@@ -66,7 +70,6 @@ public class HtmlSoupHelper {
 		if(lastChar == '/') {
 			StringBuilder sb = new StringBuilder(stringURL);
 			sb.deleteCharAt(stringLength - 1);
-			System.out.println("Zmieniona nazwa: " + sb.toString());
 			textFileName = sb.toString();
 		}
 		

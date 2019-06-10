@@ -10,31 +10,17 @@ import org.jsoup.Jsoup;
 
 public class ImageSoupHelper {
 
-	private static final String IMAGE_DESTINATION_FOLDER = "./images";
-	
-	public void connectGetAndDownloadImage(String stringURL) {
-		
-		String stringImageName = stringURL.substring(stringURL.lastIndexOf("/") + 1);
-		
-		try {
+	public File connectGetAndDownloadImage(String stringURL) throws IOException {
 			Response resultImageResponse = Jsoup.connect(stringURL)
 					.ignoreContentType(true).execute();
 			
-			File file = new File(IMAGE_DESTINATION_FOLDER);
+			File file = File.createTempFile("images", ".txt");
 			
-			boolean fileExists = file.exists();
-			if(!fileExists) {
-				fileExists = file.mkdir();
-			}
-			
-			OutputStream outputStream = new FileOutputStream(
-					IMAGE_DESTINATION_FOLDER + "/" + stringImageName);
+			OutputStream outputStream = new FileOutputStream(file);
 			outputStream.write(resultImageResponse.bodyAsBytes());
 			outputStream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+			
+			return file;
 	}
 	
 }
