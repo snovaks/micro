@@ -11,7 +11,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.snovaks.utilities.CrawlerResultStateSaver;
 import com.snovaks.utilities.ExtendedCrawlController;
+import com.snovaks.utilities.OnCrawlStateListener;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
@@ -41,7 +43,8 @@ public class CrawlerConfig {
 	@Bean(name = "imageCrawlController")
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	@Autowired
-	public ExtendedCrawlController imageCrawlController(@Qualifier(value = "imageCrawlConfig")CrawlConfig crawlConfig) throws Exception {
+	public ExtendedCrawlController imageCrawlController(@Qualifier(value = "imageCrawlConfig")CrawlConfig crawlConfig,
+			OnCrawlStateListener onCrawlStateListener) throws Exception {
 		
 		PageFetcher pageFetcherImage = new PageFetcher(crawlConfig);
 		RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
@@ -52,6 +55,11 @@ public class CrawlerConfig {
 				crawlConfig, pageFetcherImage, robotstxtServer);
 		
 		return imageController;
+	}
+	
+	@Bean
+	public OnCrawlStateListener onCrawlStateListener() {
+		return new CrawlerResultStateSaver();
 	}
 	
 	@Bean
