@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.snovaks.utilities.ExtendedCrawlController;
+
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
@@ -23,15 +25,15 @@ public class CrawlerConfig {
 	@Bean(name = "textCrawlController")
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	@Autowired
-	public CrawlController textCrawlController(@Qualifier(value = "htmlCrawlConfig")CrawlConfig crawlConfig) throws Exception {
+	public ExtendedCrawlController textCrawlController(@Qualifier(value = "htmlCrawlConfig")CrawlConfig crawlConfig) throws Exception {
 		PageFetcher pageFetcherHtml = new PageFetcher(crawlConfig);
 		
 		RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
 		RobotstxtServer robotstxtServer = new RobotstxtServer(
 				robotstxtConfig, pageFetcherHtml);
 		
-		CrawlController htmlController = new CrawlController(
-				crawlConfig, pageFetcherHtml, robotstxtServer);
+		ExtendedCrawlController htmlController = new ExtendedCrawlController
+				(crawlConfig, pageFetcherHtml, robotstxtServer);
 		
 		return htmlController;
 	}
@@ -39,14 +41,14 @@ public class CrawlerConfig {
 	@Bean(name = "imageCrawlController")
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	@Autowired
-	public CrawlController imageCrawlController(@Qualifier(value = "imageCrawlConfig")CrawlConfig crawlConfig) throws Exception {
+	public ExtendedCrawlController imageCrawlController(@Qualifier(value = "imageCrawlConfig")CrawlConfig crawlConfig) throws Exception {
 		
 		PageFetcher pageFetcherImage = new PageFetcher(crawlConfig);
 		RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
 		RobotstxtServer robotstxtServer = new RobotstxtServer(
 				robotstxtConfig, pageFetcherImage);
 
-		CrawlController imageController = new CrawlController(
+		ExtendedCrawlController imageController = new ExtendedCrawlController(
 				crawlConfig, pageFetcherImage, robotstxtServer);
 		
 		return imageController;
