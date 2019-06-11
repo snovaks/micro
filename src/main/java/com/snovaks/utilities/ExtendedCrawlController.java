@@ -30,7 +30,8 @@ public class ExtendedCrawlController extends CrawlController {
 		System.out.println("Crawlowanie zakończone");
 	}
 
-	
-	
-	
+	public void setOnCrawlStateListener(OnCrawlStateListener onCrawlStateListener) {
+		this.onCrawlStateListener = onCrawlStateListener;
+	}
+
 }

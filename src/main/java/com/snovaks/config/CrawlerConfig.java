@@ -46,7 +46,7 @@ public class CrawlerConfig {
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	@Autowired
 	public ExtendedCrawlController imageCrawlController(@Qualifier(value = "imageCrawlConfig")CrawlConfig crawlConfig,
-			CrawlerResultStateSaver crawlerResultStateSaver) throws Exception {
+			OnCrawlStateListener onCrawlStateListener) throws Exception {
 		
 		PageFetcher pageFetcherImage = new PageFetcher(crawlConfig);
 		RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
@@ -55,6 +55,7 @@ public class CrawlerConfig {
 
 		ExtendedCrawlController imageController = new ExtendedCrawlController(
 				crawlConfig, pageFetcherImage, robotstxtServer);
+		imageController.setOnCrawlStateListener(onCrawlStateListener);
 		
 		return imageController;
 	}
