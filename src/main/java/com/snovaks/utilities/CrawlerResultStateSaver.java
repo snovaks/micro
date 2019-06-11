@@ -14,21 +14,31 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 import com.snovaks.entity.CrawlContentEntity;
 import com.snovaks.entity.CrawlEntity;
 import com.snovaks.repository.CrawlEntityRepository;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Getter
+@Setter
 public class CrawlerResultStateSaver implements OnCrawlStateListener {
 
 	private static final long MAX_NUMBER_OF_BYTES = 4096L;
 	private CrawlEntityRepository crawlEntityRepository;
 	
-	public CrawlerResultStateSaver(CrawlEntityRepository crawlEntityRepository) {
-		this.crawlEntityRepository = crawlEntityRepository;
+	@Autowired
+	public CrawlerResultStateSaver crawlerResultStateSaver(CrawlEntityRepository crawlEntityRepository) {
+		CrawlerResultStateSaver crawlerResultStateSaver = new CrawlerResultStateSaver();
+		crawlerResultStateSaver.setCrawlEntityRepository(crawlEntityRepository);
+		return crawlerResultStateSaver;
 	}
 	
 	@Override
@@ -38,6 +48,9 @@ public class CrawlerResultStateSaver implements OnCrawlStateListener {
 	
 	@Override
 	public void onCrawlFinished(List<Object> crawlResults) {
+		
+		log.info("CrawlerResultStateSaver - onCrawlFinished ... saving");
+		System.out.println("CrawlerResultStateSaver - onCrawlFinished ... saving");
 		
 		CrawlEntity crawlEntity = new CrawlEntity();
 		
@@ -50,38 +63,31 @@ public class CrawlerResultStateSaver implements OnCrawlStateListener {
 				.map(x -> (File) x)
 				.collect(Collectors.toCollection(ArrayList<File>::new));
 		
-		
 		long tempDataSize = 0;
-		int tempIndex = 0;
 		
 		for(int i = 0; i < files.size(); i++) {
 			
-			if(tempDataSize < MAX_NUMBER_OF_BYTES) {
-				tempDataSize += files.get(i).length();
-			} else {
-				
-				for(int j = tempIndex; j < i; j++) {
-					
-					File file = files.get(j);
-					CrawlContentEntity cce = new CrawlContentEntity();
-				
-					try {
-						byte[] content = Files.readAllBytes(file.toPath());
-						cce.setContent(content);
-						
-						//tutaj jeszcze muszę dodać informacje o CrawlContentEntity - contentType
-						
-						crawlEntity.getCrawlContentEntities().add(cce);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}					
-					
-				}
+			System.out.println("Pętla iteracja");
+			
+			if(tempDataSize > MAX_NUMBER_OF_BYTES) {
 				
 				tempDataSize = 0;
-				tempIndex = i;
-			}
+				File file = files.get(i);
+				CrawlContentEntity cce = new CrawlContentEntity();
+				
+				try {
+					byte[] content = Files.readAllBytes(file.toPath());
+					cce.setContent(content);
+					
+					//tutaj jeszcze muszę dodać informacje o CrawlContentEntity - contentType
+
+					crawlEntity.getCrawlContentEntities().add(cce);
+				} catch (IOException e) {
+					log.warn("Error durning file saving");
+				}
+			} 
 			
+			tempDataSize += files.get(i).length();
 		}
 		
 		crawlEntityRepository.save(crawlEntity);
