@@ -19,12 +19,10 @@ public class ImageCrawler extends WebCrawler {
 
 	private static final Pattern EXCLUSIONS 
 		= Pattern.compile(".*(\\.(css|js|xml|gif|png|mp3|mp4|zip|gz|pdf))$");
-	
 	private static final Pattern IMG_PATTERNS = Pattern.compile(".*(\\.(jpg|jpeg))$");
+	
 	private List<Object> result = new ArrayList<>();
-	
 	private ImageSoupHelper imageSoupHelper = new ImageSoupHelper();
-	
 	private DataWrapper dataWrapper = new DataWrapper();
 	
 	@Override
