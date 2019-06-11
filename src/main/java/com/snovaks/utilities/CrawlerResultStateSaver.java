@@ -98,12 +98,7 @@ public class CrawlerResultStateSaver implements OnCrawlStateListener {
 		crawlEntity.setDomainURL("domena.pl");
 		crawlEntity.setCrawlDateTime(LocalDateTime.now());
 		
-		System.out.println("saving to repository");
-		if(crawlEntityRepository.save(crawlEntity) != null) {
-			System.out.println("***saved***");
-		} else {
-			System.out.println("***not saved***");
-		}
+		crawlEntityRepository.save(crawlEntity);
 		
 	}
 	
