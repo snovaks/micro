@@ -18,7 +18,6 @@ import com.snovaks.utilities.ExtendedCrawlController;
 import com.snovaks.utilities.OnCrawlStateListener;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
-import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
@@ -29,15 +28,16 @@ public class CrawlerConfig {
 	@Bean(name = "textCrawlController")
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	@Autowired
-	public ExtendedCrawlController textCrawlController(@Qualifier(value = "htmlCrawlConfig")CrawlConfig crawlConfig) throws Exception {
+	public ExtendedCrawlController textCrawlController(@Qualifier(value = "htmlCrawlConfig")CrawlConfig crawlConfig,
+			OnCrawlStateListener onCrawlStateListener) throws Exception {
 		PageFetcher pageFetcherHtml = new PageFetcher(crawlConfig);
-		
 		RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
 		RobotstxtServer robotstxtServer = new RobotstxtServer(
 				robotstxtConfig, pageFetcherHtml);
 		
 		ExtendedCrawlController htmlController = new ExtendedCrawlController
 				(crawlConfig, pageFetcherHtml, robotstxtServer);
+		htmlController.setOnCrawlStateListener(onCrawlStateListener);
 		
 		return htmlController;
 	}
