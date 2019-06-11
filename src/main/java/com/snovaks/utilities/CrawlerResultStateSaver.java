@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Scope;
 
 import com.snovaks.entity.CrawlContentEntity;
 import com.snovaks.entity.CrawlEntity;
+import com.snovaks.repository.CrawlContentEntityRepository;
 import com.snovaks.repository.CrawlEntityRepository;
 
 import lombok.Getter;
@@ -33,12 +34,12 @@ public class CrawlerResultStateSaver implements OnCrawlStateListener {
 
 	private static final long MAX_NUMBER_OF_BYTES = 4096L;
 	private CrawlEntityRepository crawlEntityRepository;
+	private CrawlContentEntityRepository crawlContentEntityRepository;
 	
-	@Autowired
-	public CrawlerResultStateSaver crawlerResultStateSaver(CrawlEntityRepository crawlEntityRepository) {
-		CrawlerResultStateSaver crawlerResultStateSaver = new CrawlerResultStateSaver();
-		crawlerResultStateSaver.setCrawlEntityRepository(crawlEntityRepository);
-		return crawlerResultStateSaver;
+	public CrawlerResultStateSaver(CrawlEntityRepository crawlEntityRepository,
+			CrawlContentEntityRepository crawlContentEntityRepository) {
+		this.crawlEntityRepository = crawlEntityRepository;
+		this.crawlContentEntityRepository = crawlContentEntityRepository;
 	}
 	
 	@Override

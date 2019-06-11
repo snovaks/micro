@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.snovaks.repository.CrawlContentEntityRepository;
+import com.snovaks.repository.CrawlEntityRepository;
 import com.snovaks.utilities.CrawlerResultStateSaver;
 import com.snovaks.utilities.ExtendedCrawlController;
 import com.snovaks.utilities.OnCrawlStateListener;
@@ -58,8 +60,9 @@ public class CrawlerConfig {
 	}
 	
 	@Bean
-	public CrawlerResultStateSaver crawlerResultStateSaver() {
-		return new CrawlerResultStateSaver();
+	@Autowired
+	public CrawlerResultStateSaver crawlerResultStateSaver(CrawlEntityRepository crawlEntityRepository, CrawlContentEntityRepository crawlContentEntityRepository) {
+		return new CrawlerResultStateSaver(crawlEntityRepository, crawlContentEntityRepository);
 	}
 	
 	@Bean
