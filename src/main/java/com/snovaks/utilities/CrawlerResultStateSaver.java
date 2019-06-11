@@ -26,10 +26,8 @@ import net.sf.jmimemagic.MagicMatch;
 @Setter
 public class CrawlerResultStateSaver implements OnCrawlStateListener {
 
-	private static final long MAX_NUMBER_OF_BYTES = 4096L;
 	private CrawlEntityRepository crawlEntityRepository;
 	private CrawlContentEntityRepository crawlContentEntityRepository;
-	
 	
 	public CrawlerResultStateSaver(CrawlEntityRepository crawlEntityRepository,
 			CrawlContentEntityRepository crawlContentEntityRepository) {
@@ -39,14 +37,13 @@ public class CrawlerResultStateSaver implements OnCrawlStateListener {
 	
 	@Override
 	public void onCrawlStarted() {
-		
+		log.info("onCrawl started");
 	}
 	
 	@Override
 	public void onCrawlFinished(List<Object> crawlResults) {
 		
-		log.info("CrawlerResultStateSaver - onCrawlFinished ... saving");
-		System.out.println("CrawlerResultStateSaver - onCrawlFinished ... saving");
+		log.info("CrawlerResultStateSaver - onCrawlFinished method ... saving");
 		
 		CrawlEntity crawlEntity = new CrawlEntity();
 		crawlEntity.setCrawlContentEntities(new ArrayList<>());
@@ -79,37 +76,29 @@ public class CrawlerResultStateSaver implements OnCrawlStateListener {
 		String domainURL = getDomain(domainNames);
 		String domainName = proceedToDomainName(domainURL);
 		
-		System.out.println("files size" + files.size());
-		
 		for(int i = 0; i < files.size(); i++) {
-			
-			System.out.println("iteracja: " + i);
 			File file = files.get(i);
 			CrawlContentEntity cce = new CrawlContentEntity();
 			Magic magic = new Magic();
 			try {
 				MagicMatch match = magic.getMagicMatch(file, false);
 				String contentType = match.getMimeType();
-				System.out.println(contentType);
 				byte[] content = Files.readAllBytes(file.toPath());
 				cce.setContent(content);
 				cce.setContentType(contentType);
 				crawlEntity.addCrawlContentEntity(cce);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.warn("Exception during file processing", e);
 			} 
 		}
 		crawlEntity.setDomainURL(domainName);
 		crawlEntity.setCrawlDateTime(LocalDateTime.now());
-		
 		crawlEntityRepository.save(crawlEntity);
 	}
 	
 	private String proceedToDomainName(String url) {
-		
 		int indexOfSecondSlash = StringUtils.ordinalIndexOf(url, "/", 2);
 		int indexOfThirdSlash = StringUtils.ordinalIndexOf(url, "/", 3);
-		
 		return url.substring(indexOfSecondSlash + 1, indexOfThirdSlash);
 	}
 	
