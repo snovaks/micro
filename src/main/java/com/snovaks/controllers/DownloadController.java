@@ -35,7 +35,7 @@ public class DownloadController {
 	}
 
 	@GetMapping(value="/{url}", produces="application/zip")
-	public void zipFiles(@PathVariable String url, HttpServletResponse response) throws IOException {
+	public void getZipFiles(@PathVariable String url, HttpServletResponse response) throws IOException {
 		int numberOfSite = 0;
 		int sizeOfSite = 2;
 		Page<CrawlEntity> page = downloadService.findCrawlsAndInitializeChildren(url, numberOfSite, sizeOfSite);
