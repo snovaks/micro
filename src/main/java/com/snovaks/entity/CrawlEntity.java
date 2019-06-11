@@ -34,4 +34,9 @@ public class CrawlEntity {
 	@OneToMany(mappedBy="crawlEntity", fetch=FetchType.LAZY, cascade=CascadeType.PERSIST)
 	private List<CrawlContentEntity> crawlContentEntities;
 	
+	public void addCrawlContentEntity(CrawlContentEntity cce) {
+		cce.setCrawlEntity(this);
+		getCrawlContentEntities().add(cce);
+	}
+	
 }

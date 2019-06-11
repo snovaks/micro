@@ -90,7 +90,7 @@ public class CrawlerResultStateSaver implements OnCrawlStateListener {
 				byte[] content = Files.readAllBytes(file.toPath());
 				cce.setContent(content);
 				cce.setContentType(contentType);
-				crawlEntity.getCrawlContentEntities().add(cce);
+				crawlEntity.addCrawlContentEntity(cce);
 			} catch (Exception e) {
 				e.printStackTrace();
 			} 
