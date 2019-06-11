@@ -1,9 +1,6 @@
 package com.snovaks.utilities;
 
-import java.io.File;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
@@ -29,7 +26,6 @@ public class ExtendedCrawlController extends CrawlController {
 			onCrawlStateListener.onCrawlFinished(objects);
 		}
 		log.warn("OnCrawlStateListener is null");
-		System.out.println("Crawlowanie zakończone");
 	}
 
 	public void setOnCrawlStateListener(OnCrawlStateListener onCrawlStateListener) {
