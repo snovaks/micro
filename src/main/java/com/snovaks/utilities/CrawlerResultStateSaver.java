@@ -1,25 +1,15 @@
 package com.snovaks.utilities;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.nio.file.Files;
-import java.nio.file.spi.FileTypeDetector;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
+import org.apache.commons.lang3.StringUtils;
 
+import com.snovaks.domain.DataWrapper;
 import com.snovaks.entity.CrawlContentEntity;
 import com.snovaks.entity.CrawlEntity;
 import com.snovaks.repository.CrawlContentEntityRepository;
@@ -29,10 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jmimemagic.Magic;
-import net.sf.jmimemagic.MagicException;
 import net.sf.jmimemagic.MagicMatch;
-import net.sf.jmimemagic.MagicMatchNotFoundException;
-import net.sf.jmimemagic.MagicParseException;
 
 @Slf4j
 @Getter
@@ -64,7 +51,18 @@ public class CrawlerResultStateSaver implements OnCrawlStateListener {
 		CrawlEntity crawlEntity = new CrawlEntity();
 		crawlEntity.setCrawlContentEntities(new ArrayList<>());
 		
-		List<File> files = (ArrayList<File>) crawlResults
+		List<DataWrapper> dataWrappers = crawlResults
+				.stream()
+				.filter(x -> x instanceof DataWrapper)
+				.map(x -> (DataWrapper) x)
+				.collect(Collectors.toCollection(ArrayList<DataWrapper>::new));
+		
+		List<Object> results = dataWrappers
+				.stream()
+				.map(x -> x.getCrawlResults())
+				.collect(Collectors.toCollection(ArrayList<Object>::new));
+		
+		List<File> files = (ArrayList<File>) results
 				.stream()
 				.filter(x -> x instanceof List)
 				.map(x -> (List) x)
@@ -73,7 +71,13 @@ public class CrawlerResultStateSaver implements OnCrawlStateListener {
 				.map(x -> (File) x)
 				.collect(Collectors.toCollection(ArrayList<File>::new));
 		
-		long tempDataSize = 0;
+		List<String> domainNames = dataWrappers
+				.stream()
+				.map(x -> x.getDomainName())
+				.collect(Collectors.toCollection(ArrayList<String>::new));
+		
+		String domainURL = getDomain(domainNames);
+		String domainName = proceedToDomainName(domainURL);
 		
 		System.out.println("files size" + files.size());
 		
@@ -95,11 +99,27 @@ public class CrawlerResultStateSaver implements OnCrawlStateListener {
 				e.printStackTrace();
 			} 
 		}
-		crawlEntity.setDomainURL("domena.pl");
+		crawlEntity.setDomainURL(domainName);
 		crawlEntity.setCrawlDateTime(LocalDateTime.now());
 		
 		crawlEntityRepository.save(crawlEntity);
+	}
+	
+	private String proceedToDomainName(String url) {
 		
+		int indexOfSecondSlash = StringUtils.ordinalIndexOf(url, "/", 2);
+		int indexOfThirdSlash = StringUtils.ordinalIndexOf(url, "/", 3);
+		
+		return url.substring(indexOfSecondSlash + 1, indexOfThirdSlash);
+	}
+	
+	private String getDomain(List<String> domainNames) {
+		for(String domain : domainNames) {
+			if(domain != null) {
+				return domain;
+			}
+		}
+		return "//unknown domain//";
 	}
 	
 }

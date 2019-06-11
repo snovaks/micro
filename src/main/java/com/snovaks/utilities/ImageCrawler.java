@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import com.snovaks.domain.DataWrapper;
+
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.BinaryParseData;
@@ -22,6 +24,8 @@ public class ImageCrawler extends WebCrawler {
 	private List<Object> result = new ArrayList<>();
 	
 	private ImageSoupHelper imageSoupHelper = new ImageSoupHelper();
+	
+	private DataWrapper dataWrapper = new DataWrapper();
 	
 	@Override
 	public boolean shouldVisit(Page referringPage, WebURL url) {
@@ -47,6 +51,8 @@ public class ImageCrawler extends WebCrawler {
 			try {
 				File file = imageSoupHelper.connectGetAndDownloadImage(url);
 				result.add(file);
+				dataWrapper.setCrawlResults(result);
+				dataWrapper.setDomainName(url);
 			} catch (IOException e) {
 				log.warn("Exception", e);
 			}
@@ -55,7 +61,7 @@ public class ImageCrawler extends WebCrawler {
 	
 	@Override
 	public Object getMyLocalData() {
-		return result;
+		return dataWrapper;
 	}
 	
 }
