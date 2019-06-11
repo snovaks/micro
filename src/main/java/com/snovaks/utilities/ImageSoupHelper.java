@@ -11,16 +11,16 @@ import org.jsoup.Jsoup;
 public class ImageSoupHelper {
 
 	public File connectGetAndDownloadImage(String stringURL) throws IOException {
-			Response resultImageResponse = Jsoup.connect(stringURL)
-					.ignoreContentType(true).execute();
+		Response resultImageResponse = Jsoup.connect(stringURL)
+				.ignoreContentType(true).execute();
 			
-			File file = File.createTempFile("images", ".txt");
+		File file = File.createTempFile("images", ".txt");
 			
-			OutputStream outputStream = new FileOutputStream(file);
-			outputStream.write(resultImageResponse.bodyAsBytes());
-			outputStream.close();
+		OutputStream outputStream = new FileOutputStream(file);
+		outputStream.write(resultImageResponse.bodyAsBytes());
+		outputStream.close();
 			
-			return file;
+		return file;
 	}
 	
 }
