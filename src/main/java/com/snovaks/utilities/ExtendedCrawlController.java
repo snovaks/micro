@@ -3,6 +3,8 @@ package com.snovaks.utilities;
 import java.io.File;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
@@ -10,7 +12,7 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
 public class ExtendedCrawlController extends CrawlController {
 
-	private OnCrawlStateListener crawlStateListener;
+	private OnCrawlStateListener onCrawlStateListener;
 	
 	public ExtendedCrawlController(CrawlConfig config, PageFetcher pageFetcher,
             RobotstxtServer robotstxtServer) throws Exception {
@@ -21,13 +23,14 @@ public class ExtendedCrawlController extends CrawlController {
 	public void shutdown() {
 		super.shutdown();
 		List<Object> objects = getCrawlersLocalData();
-		if(crawlStateListener != null) {
-			crawlStateListener.onCrawlFinished(objects);
+		if(onCrawlStateListener != null) {
+			onCrawlStateListener.onCrawlFinished(objects);
 		}
+		
+		System.out.println("Crawlowanie zakończone");
 	}
 
-	public void setCrawlStateListener(OnCrawlStateListener crawlStateListener) {
-		this.crawlStateListener = crawlStateListener;
-	}
+	
+	
 	
 }

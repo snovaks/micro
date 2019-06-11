@@ -19,7 +19,7 @@ public class CrawlerServiceTest {
 	@Test
 	public void x() {
 		
-		crawlerService.searchText();
+		//crawlerService.searchText();
 	}
 	
 }

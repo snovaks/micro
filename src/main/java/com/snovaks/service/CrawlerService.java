@@ -20,24 +20,25 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 @Service
 public class CrawlerService {
 	
-	private CrawlController textController;
-	private CrawlController imageController;
+	private CrawlController textCrawlController;
+	private CrawlController imageCrawlController;
 	
 	@Autowired
-	public CrawlerService(@Qualifier(value="textCrawlController")CrawlController textController, 
-			@Qualifier(value="imageCrawlController")CrawlController imageController) {
-		this.textController = textController;
-		this.imageController = imageController;
+	public CrawlerService(@Qualifier(value="textCrawlController")CrawlController textCrawlController, 
+			@Qualifier(value="imageCrawlController")CrawlController imageCrawlController) {
+		this.textCrawlController = textCrawlController;
+		this.imageCrawlController = imageCrawlController;
 	}
 	
 	public void searchText(SearchRequest searchRequest) throws Exception {
-		textController.addSeed(searchRequest.getUrl());
-		textController.startNonBlocking(HtmlCrawler::new, 10);
+		textCrawlController.addSeed(searchRequest.getUrl());
+		textCrawlController.startNonBlocking(HtmlCrawler::new, 10);
 	}
 	
 	public void searchImages(SearchRequest searchRequest) throws Exception {
-		imageController.addSeed(searchRequest.getUrl());
-		imageController.startNonBlocking(ImageCrawler::new, 10);
+		imageCrawlController.addSeed(searchRequest.getUrl());
+		imageCrawlController.startNonBlocking(ImageCrawler::new, 10);
+		imageCrawlController.waitUntilFinish();
 	}
 	
 	private String getDomainName(String url) {

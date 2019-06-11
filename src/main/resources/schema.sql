@@ -1,4 +1,4 @@
-create schema dbo;
+create schema if not exists dbo;
 
 create table dbo.t_crawl(
 id_crawl identity(1,1) not null,
