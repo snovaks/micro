@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.nio.file.Files;
+import java.nio.file.spi.FileTypeDetector;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +28,11 @@ import com.snovaks.repository.CrawlEntityRepository;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jmimemagic.Magic;
+import net.sf.jmimemagic.MagicException;
+import net.sf.jmimemagic.MagicMatch;
+import net.sf.jmimemagic.MagicMatchNotFoundException;
+import net.sf.jmimemagic.MagicParseException;
 
 @Slf4j
 @Getter
@@ -35,6 +42,7 @@ public class CrawlerResultStateSaver implements OnCrawlStateListener {
 	private static final long MAX_NUMBER_OF_BYTES = 4096L;
 	private CrawlEntityRepository crawlEntityRepository;
 	private CrawlContentEntityRepository crawlContentEntityRepository;
+	
 	
 	public CrawlerResultStateSaver(CrawlEntityRepository crawlEntityRepository,
 			CrawlContentEntityRepository crawlContentEntityRepository) {
@@ -54,6 +62,7 @@ public class CrawlerResultStateSaver implements OnCrawlStateListener {
 		System.out.println("CrawlerResultStateSaver - onCrawlFinished ... saving");
 		
 		CrawlEntity crawlEntity = new CrawlEntity();
+		crawlEntity.setCrawlContentEntities(new ArrayList<>());
 		
 		List<File> files = (ArrayList<File>) crawlResults
 				.stream()
@@ -66,32 +75,35 @@ public class CrawlerResultStateSaver implements OnCrawlStateListener {
 		
 		long tempDataSize = 0;
 		
+		System.out.println("files size" + files.size());
+		
 		for(int i = 0; i < files.size(); i++) {
 			
-			System.out.println("Pętla iteracja");
-			
-			if(tempDataSize > MAX_NUMBER_OF_BYTES) {
-				
-				tempDataSize = 0;
-				File file = files.get(i);
-				CrawlContentEntity cce = new CrawlContentEntity();
-				
-				try {
-					byte[] content = Files.readAllBytes(file.toPath());
-					cce.setContent(content);
-					
-					//tutaj jeszcze muszę dodać informacje o CrawlContentEntity - contentType
-
-					crawlEntity.getCrawlContentEntities().add(cce);
-				} catch (IOException e) {
-					log.warn("Error durning file saving");
-				}
+			System.out.println("iteracja: " + i);
+			File file = files.get(i);
+			CrawlContentEntity cce = new CrawlContentEntity();
+			Magic magic = new Magic();
+			try {
+				MagicMatch match = magic.getMagicMatch(file, false);
+				String contentType = match.getMimeType();
+				System.out.println(contentType);
+				byte[] content = Files.readAllBytes(file.toPath());
+				cce.setContent(content);
+				cce.setContentType(contentType);
+				crawlEntity.getCrawlContentEntities().add(cce);
+			} catch (Exception e) {
+				e.printStackTrace();
 			} 
-			
-			tempDataSize += files.get(i).length();
 		}
+		crawlEntity.setDomainURL("domena.pl");
+		crawlEntity.setCrawlDateTime(LocalDateTime.now());
 		
-		crawlEntityRepository.save(crawlEntity);
+		System.out.println("saving to repository");
+		if(crawlEntityRepository.save(crawlEntity) != null) {
+			System.out.println("***saved***");
+		} else {
+			System.out.println("***not saved***");
+		}
 		
 	}
 	

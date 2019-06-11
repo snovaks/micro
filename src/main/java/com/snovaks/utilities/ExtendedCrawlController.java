@@ -9,7 +9,9 @@ import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ExtendedCrawlController extends CrawlController {
 
 	private OnCrawlStateListener onCrawlStateListener;
@@ -26,7 +28,7 @@ public class ExtendedCrawlController extends CrawlController {
 		if(onCrawlStateListener != null) {
 			onCrawlStateListener.onCrawlFinished(objects);
 		}
-		
+		log.warn("OnCrawlStateListener is null");
 		System.out.println("Crawlowanie zakończone");
 	}
 
